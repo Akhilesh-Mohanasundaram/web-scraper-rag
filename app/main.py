@@ -1,25 +1,28 @@
+import sys
+import asyncio
 from fastapi import FastAPI
 from app.core.config import settings
-from app.workers.celery_app import celery_app
+from app.api.endpoints import search, scrape, ingest # <--- ADD ingest
+
+# --- FIX: FORCE WINDOWS TO USE PROACTOR EVENT LOOP ---
+# This must run before any async code to support Playwright on Windows
+if sys.platform.startswith("win"):
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+# -----------------------------------------------------
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
 @app.get("/health")
 def health_check():
-    return {
-        "status": "healthy",
-        "neo4j_uri": settings.NEO4J_URI,
-        "redis_url": settings.CELERY_BROKER_URL
-    }
+    return {"status": "healthy"}
 
-@app.get("/test-celery")
-def test_celery_task():
-    """
-    Trigger a simple background task to verify Redis connection.
-    """
-    # We will define tasks properly later, this is just a quick check
-    return {"message": "Celery integration pending task definition"}
+# Register Routers
+app.include_router(search.router, prefix="/api/v1", tags=["Search"])
+app.include_router(scrape.router, prefix="/api/v1", tags=["Scrape"])
+app.include_router(ingest.router, prefix="/api/v1", tags=["Ingestion"]) # <--- ADD THIS
 
 if __name__ == "__main__":
     import uvicorn
+    # Note: Sometimes 'reload=True' causes issues on Windows even with the fix.
+    # If it still fails, try removing 'reload=True'.
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
