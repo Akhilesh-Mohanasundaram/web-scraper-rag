@@ -29,7 +29,7 @@ class Settings(BaseSettings):
 
     @property
     def CELERY_RESULT_BACKEND(self) -> str:
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/1"
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/0"
 
     class Config:
         env_file = ".env"

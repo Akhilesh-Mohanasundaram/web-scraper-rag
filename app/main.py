@@ -3,6 +3,7 @@ import asyncio
 from fastapi import FastAPI
 from app.core.config import settings
 from app.api.endpoints import search, scrape, ingest # <--- ADD ingest
+from app.workers.celery_app import celery_app
 
 # --- FIX: FORCE WINDOWS TO USE PROACTOR EVENT LOOP ---
 # This must run before any async code to support Playwright on Windows
