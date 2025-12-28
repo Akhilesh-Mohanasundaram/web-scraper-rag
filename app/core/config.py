@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     
     # LLM Keys
-    OPENAI_API_KEY: str | None = None
+    GOOGLE_API_KEY: str | None = None
     SERPER_API_KEY: str | None = None
 
     @property
