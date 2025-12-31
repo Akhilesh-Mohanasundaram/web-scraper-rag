@@ -102,9 +102,6 @@ class GraphService:
             model_name="models/text-embedding-004"
         )
 
-        Settings.llm = llm
-        Settings.embed_model = embed_model
-
         # 3. Neo4j Connection
         graph_store = Neo4jPropertyGraphStore(
             username=settings.NEO4J_USER,
