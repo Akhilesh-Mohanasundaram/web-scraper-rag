@@ -26,7 +26,7 @@ services:
   # 2. Neo4j - The Knowledge Graph Engine
   # ---------------------------------------------------------------------------
   neo4j:
-    image: neo4j:5.19.0
+    image: neo4j:5.26.0
     container_name: rag_neo4j
     restart: unless-stopped
     ports:

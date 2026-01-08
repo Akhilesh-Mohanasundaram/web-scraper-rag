@@ -18,11 +18,22 @@ def ingest_pipeline_task(self, query: str, num_results: int):
     try:
         # Step 1: Search
         self.update_state(state='PROGRESS', meta={'status': 'Searching Google...'})
-        search_results = async_to_sync(search_service.search)(query, num_results)
-        urls = [item.link for item in search_results]
+        
+        # FIX: Fetch more results (e.g., +3 buffer) to account for filtering
+        buffer_size = 3 
+        search_results = async_to_sync(search_service.search)(query, num_results + buffer_size)
+        
+        # Filter Wikipedia
+        valid_urls = [
+            item.link for item in search_results 
+            if "wikipedia.org" not in item.link
+        ]
+        
+        # Slice to get exactly the number the user asked for
+        urls = valid_urls[:num_results]
         
         if not urls:
-            return {"status": "failed", "reason": "No URLs found"}
+             return {"status": "failed", "reason": "No valid URLs found"}
 
         # Step 2: Scrape
         self.update_state(state='PROGRESS', meta={'status': f'Scraping {len(urls)} sites...'})

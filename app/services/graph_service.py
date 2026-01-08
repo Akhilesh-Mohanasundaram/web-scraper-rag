@@ -5,7 +5,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 # LlamaIndex Imports
 from llama_index.core import Document, PropertyGraphIndex
 from llama_index.graph_stores.neo4j import Neo4jPropertyGraphStore
-from llama_index.core.indices.property_graph import SimpleLLMPathExtractor
+from llama_index.core.indices.property_graph import SimpleLLMPathExtractor, SchemaLLMPathExtractor
 from llama_index.core.llms import CustomLLM, LLMMetadata, CompletionResponse, CompletionResponseGen
 from llama_index.core.llms.callbacks import llm_completion_callback
 from llama_index.core.base.embeddings.base import BaseEmbedding
@@ -16,7 +16,7 @@ from google.api_core.exceptions import ResourceExhausted, InternalServerError
 
 # Config Imports
 from app.core.config import settings
-from app.core.graph_schema import SCHEMA_GUIDELINES
+from app.core.graph_schema import SCHEMA_GUIDELINES, VALID_NODES, VALID_RELATIONS
 
 # -----------------------------------------------------------------------------
 # 1. Custom Sync Embedder (Fixes Event Loop Crash)
@@ -90,37 +90,33 @@ class GraphService:
 
         print(f"🔌 Connecting to Graph DB for: {source_url}")
 
-        # 1. Use Custom Sync LLM
         llm = SyncGeminiLLM(
             api_key=settings.GOOGLE_API_KEY,
-            model_name="models/gemini-2.5-flash"
+            model_name="gemini-2.5-flash"
         )
 
-        # 2. Use Custom Sync Embedder
         embed_model = SyncGeminiEmbedding(
             api_key=settings.GOOGLE_API_KEY,
-            model_name="models/text-embedding-004"
+            model_name="text-embedding-004"
         )
 
-        # 3. Neo4j Connection
+        # REQUIREMENT: Neo4j Database must be version 5.x+
         graph_store = Neo4jPropertyGraphStore(
             username=settings.NEO4J_USER,
             password=settings.NEO4J_PASSWORD,
             url=settings.NEO4J_URI,
         )
 
-        # 4. Extraction Logic
-        extraction_prompt = (
-            "You are a graph extraction engine. "
-            "Extract meaningful entities and relationships from the text.\n"
-            f"{SCHEMA_GUIDELINES}\n" 
-            "Output the results in the requested format."
-        )
-
-        extractor = SimpleLLMPathExtractor(
+        # 4. Extraction Logic (FIXED)
+        # Fixes "Chunk" nodes by using SchemaLLMPathExtractor
+        # Fixes Pydantic crash by using strict=False
+        # Fixes deadlock by removing num_workers (running sequentially)
+        extractor = SchemaLLMPathExtractor(
             llm=llm,
-            extract_prompt=extraction_prompt,
-            max_paths_per_chunk=10 
+            possible_entities=VALID_NODES,
+            possible_relations=VALID_RELATIONS,
+            strict=False,
+            num_workers=1
         )
 
         # 5. Index Wrapper

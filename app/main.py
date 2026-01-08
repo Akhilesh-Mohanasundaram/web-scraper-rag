@@ -2,7 +2,9 @@ import sys
 import asyncio
 from fastapi import FastAPI
 from app.core.config import settings
-from app.api.endpoints import search, scrape, ingest # <--- ADD ingest
+
+# --- UPDATE IMPORTS: Add 'chat' to the list ---
+from app.api.endpoints import search, scrape, ingest, chat 
 from app.workers.celery_app import celery_app
 
 # --- FIX: FORCE WINDOWS TO USE PROACTOR EVENT LOOP ---
@@ -20,7 +22,11 @@ def health_check():
 # Register Routers
 app.include_router(search.router, prefix="/api/v1", tags=["Search"])
 app.include_router(scrape.router, prefix="/api/v1", tags=["Scrape"])
-app.include_router(ingest.router, prefix="/api/v1", tags=["Ingestion"]) # <--- ADD THIS
+app.include_router(ingest.router, prefix="/api/v1", tags=["Ingestion"])
+
+# --- NEW: Register Chat Router ---
+# The endpoint will be available at: POST /api/v1/chat/stream
+app.include_router(chat.router, prefix="/api/v1/chat", tags=["Chat"])
 
 if __name__ == "__main__":
     import uvicorn

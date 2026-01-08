@@ -1,34 +1,42 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from celery.result import AsyncResult
-from app.schemas.ingest import IngestRequest, IngestResponse
 from app.workers.tasks import ingest_pipeline_task
 
 router = APIRouter()
 
-@router.post("/ingest", response_model=IngestResponse)
-async def start_ingestion(request: IngestRequest):
-    """
-    Triggers the Search + Scrape pipeline in the background.
-    """
-    # Trigger Celery Task
-    task = ingest_pipeline_task.delay(request.query, request.num_results)
-    
-    return IngestResponse(
-        task_id=task.id,
-        status="Processing",
-        message="Ingestion started in background."
-    )
+class IngestRequest(BaseModel):
+    query: str
+    num_results: int = 1
 
-@router.get("/ingest/{task_id}")
-async def get_ingestion_status(task_id: str):
+class IngestResponse(BaseModel):
+    task_id: str
+    message: str
+
+@router.post("/ingest", response_model=IngestResponse)
+async def start_ingest(payload: IngestRequest):
     """
-    Check the status of a background task.
+    Starts the background ingestion pipeline (Search -> Scrape -> Graph).
+    """
+    task = ingest_pipeline_task.delay(payload.query, payload.num_results)
+    return {"task_id": task.id, "message": "Ingestion started"}
+
+# --- THIS WAS MISSING ---
+@router.get("/ingest/status/{task_id}")
+async def get_status(task_id: str):
+    """
+    Check the status of a Celery background task.
     """
     task_result = AsyncResult(task_id)
     
     response = {
         "task_id": task_id,
         "status": task_result.status,
-        "result": task_result.result if task_result.ready() else None
+        "result": task_result.result
     }
+    
+    # Clean up result if it's an exception (not JSON serializable)
+    if task_result.status == "FAILURE":
+        response["result"] = str(task_result.result)
+        
     return response
