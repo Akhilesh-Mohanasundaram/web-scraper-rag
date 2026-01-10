@@ -289,19 +289,19 @@ The graph is strictly typed to ensure high-quality retrieval:
 ### Main Interface
 The application features an intuitive Streamlit interface with a control panel and chat interface:
 
-![Main Interface](\screens\frame1.PNG)
+![Main Interface](screens/frame1.PNG)
 *Main chat interface showing the Graph RAG Agent ready to answer questions*
 
 ### Knowledge Ingestion Pipeline
 Enter a topic and configure the number of websites to scrape:
 
-![Ingestion Pipeline](\screens\frame2.PNG)
+![Ingestion Pipeline](screens/frame2.PNG)
 *Active ingestion pipeline processing "Concepts of OOPs" with real-time task status*
 
 ### Interactive Q&A
 Ask questions and get context-aware answers from your knowledge graph:
 
-![Chat Example](\screens\frame3.PNG)
+![Chat Example](screens/frame3.PNG)
 *Example query showing polymorphism explanation retrieved from the knowledge graph*
 
 ### Key UI Features:
