@@ -1,4 +1,4 @@
-# 🕸️ GraphRAG Agent: Web Scraper + Knowledge Graph RAG
+# GraphRAG Agent: Web Scraper + Knowledge Graph RAG
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue) ![Neo4j](https://img.shields.io/badge/Neo4j-5.26-008CC1) ![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688) ![Gemini](https://img.shields.io/badge/AI-Gemini%202.0-8E75B2) ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
 
