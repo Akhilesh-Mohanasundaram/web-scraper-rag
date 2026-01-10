@@ -191,6 +191,74 @@ poetry run streamlit run streamlit_app.py
 
 ---
 
+### Neo4j Graph Management
+
+Access the Neo4j Browser at http://localhost:7474 and use these Cypher commands:
+
+**View all nodes and relationships:**
+```cypher
+MATCH (n) RETURN n LIMIT 100
+```
+
+**View nodes by type:**
+```cypher
+// View all Concepts
+MATCH (n:Concept) RETURN n LIMIT 50
+
+// View all People
+MATCH (n:Person) RETURN n LIMIT 50
+
+// View all Technologies
+MATCH (n:Technology) RETURN n LIMIT 50
+```
+
+**View relationships:**
+```cypher
+// View all relationships
+MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 100
+
+// View specific relationship types
+MATCH (n)-[r:RELATES_TO]->(m) RETURN n, r, m LIMIT 50
+```
+
+**Count nodes and relationships:**
+```cypher
+// Count all nodes
+MATCH (n) RETURN count(n) as total_nodes
+
+// Count nodes by type
+MATCH (n) RETURN labels(n) as node_type, count(n) as count
+
+// Count all relationships
+MATCH ()-[r]->() RETURN count(r) as total_relationships
+```
+
+**Delete operations:**
+```cypher
+// Delete all nodes and relationships (⚠️ Use with caution!)
+MATCH (n) DETACH DELETE n
+
+// Delete specific node types
+MATCH (n:Concept) DETACH DELETE n
+
+// Delete nodes with specific property
+MATCH (n {name: "specific_name"}) DETACH DELETE n
+
+// Delete relationships only
+MATCH ()-[r:RELATES_TO]->() DELETE r
+```
+
+**Search for specific nodes:**
+```cypher
+// Find nodes by name (case-insensitive)
+MATCH (n) WHERE toLower(n.name) CONTAINS 'ai' RETURN n LIMIT 25
+
+// Find nodes with specific properties
+MATCH (n:Technology {name: "GPT-4"}) RETURN n
+```
+
+---
+
 ## 🧠 Implementation Details
 
 ### 1. The "Chunk" Node Fix
@@ -213,5 +281,40 @@ The graph is strictly typed to ensure high-quality retrieval:
 
 - **Nodes:** `Concept`, `Person`, `Organization`, `Technology`, `Event`.
 - **Relationships:** `RELATES_TO`, `INVENTED_BY`, `USED_BY`, `PART_OF`, `WORKED_AT`.
+
+---
+
+## 📸 UI Screenshots
+
+### Main Interface
+The application features an intuitive Streamlit interface with a control panel and chat interface:
+
+### Knowledge Ingestion Pipeline
+Enter a topic and configure the number of websites to scrape:
+
+![Ingestion Pipeline](path/to/screenshot2.png)
+*Active ingestion pipeline processing "Concepts of OOPs" with real-time task status*
+
+### Interactive Q&A
+Ask questions and get context-aware answers from your knowledge graph:
+
+![Chat Example](screens\frame3.PNG)
+*Example query showing polymorphism explanation retrieved from the knowledge graph*
+
+### Key UI Features:
+- **Control Panel (Left Sidebar):**
+  - 📚 Knowledge Ingestion: Enter topics and configure scraping
+  - 🔄 System Status: Real-time API health monitoring
+  - ⚙️ Settings: Clear chat history and preferences
+  
+- **Main Chat Area:**
+  - Interactive Q&A with the knowledge graph
+  - Context-aware responses with source attribution
+  - Chat history with user and assistant messages
+
+- **Status Indicators:**
+  - ✅ Pipeline Active: Shows current ingestion task ID
+  - 🟢 API Online: Backend health status
+  - 📊 Real-time progress updates during scraping
 
 ---
