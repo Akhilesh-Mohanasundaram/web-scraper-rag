@@ -16,7 +16,13 @@ An autonomous RAG (Retrieval-Augmented Generation) pipeline that builds a struct
   - [Running with Docker (Recommended)](#running-with-docker-recommended)
   - [Running Locally (Dev Mode)](#running-locally-dev-mode)
 - [💻 Usage Guide](#-usage-guide)
+  - [Neo4j Graph Management](#neo4j-graph-management)
 - [🧠 Implementation Details](#-implementation-details)
+- [📸 UI Screenshots](#-ui-screenshots)
+  - [Main Interface](#main-interface)
+  - [Knowledge Ingestion Pipeline](#knowledge-ingestion-pipeline)
+  - [Interactive Q&A](#interactive-qa)
+  - [Key UI Features](#key-ui-features)
 
 ---
 
@@ -188,8 +194,6 @@ poetry run streamlit run streamlit_app.py
    - `✅ Successfully ingested...`
 
 4. **Chat:** Once ingestion finishes, use the main chat window to ask questions like *"What are the key concepts of Generative AI?"*.
-
----
 
 ### Neo4j Graph Management
 
