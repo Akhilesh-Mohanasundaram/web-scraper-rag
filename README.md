@@ -300,7 +300,7 @@ The application features an intuitive Streamlit interface with a control panel a
 Enter a topic and configure the number of websites to scrape:
 
 ![Ingestion Pipeline](screens/frame2.PNG)
-*Active ingestion pipeline processing "Concepts of OOPs" with real-time task status*
+*Active ingestion pipeline processing with real-time task status*
 
 ### Interactive Q&A
 Ask questions and get context-aware answers from your knowledge graph:
