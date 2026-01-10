@@ -17,7 +17,6 @@ An autonomous RAG (Retrieval-Augmented Generation) pipeline that builds a struct
   - [Running Locally (Dev Mode)](#running-locally-dev-mode)
 - [💻 Usage Guide](#-usage-guide)
 - [🧠 Implementation Details](#-implementation-details)
-- [🔧 Troubleshooting](#-troubleshooting)
 
 ---
 
@@ -98,17 +97,32 @@ cd graph-rag-agent
 
 2. Create a `.env` file in the root directory:
 ```env
+# --- PROJECT SETTINGS ---
+PROJECT_NAME=web-rag-scraper
+PYTHON_VERSION=3.11
+
 # --- AI & SEARCH ---
-GOOGLE_API_KEY=your_gemini_api_key
-SERPER_API_KEY=your_serper_api_key
+GOOGLE_API_KEY=<your_google_api_key>
+SERPER_API_KEY=<your_serper_api_key>
 
-# --- DATABASES ---
-NEO4J_URI=bolt://localhost:7687
-NEO4J_USER=neo4j
-NEO4J_PASSWORD=password123
+# --- POSTGRESQL (Relational DB) ---
+POSTGRES_USER=<your_postgres_user>
+POSTGRES_PASSWORD=<your_postgres_password>
+POSTGRES_DB=<your_database_name>
+POSTGRES_PORT=5432
 
-# --- REDIS ---
-REDIS_URL=redis://localhost:6379/0
+# --- NEO4J (Graph DB) ---
+NEO4J_USER=<your_neo4j_user>
+NEO4J_PASSWORD=<your_neo4j_password>
+NEO4J_HTTP_PORT=7474
+NEO4J_BOLT_PORT=7687
+# Memory settings for production (adjust based on your RAM)
+NEO4J_dbms_memory_heap_initial__size=1G
+NEO4J_dbms_memory_heap_max__size=2G
+
+# --- REDIS (Cache & Queue) ---
+REDIS_PORT=6379
+REDIS_HOST=127.0.0.1
 ```
 
 ### Running with Docker (Recommended)
@@ -171,7 +185,6 @@ poetry run streamlit run streamlit_app.py
    - `Searching Google...`
    - `Scraping URLs...`
    - `🔌 Connecting to Graph DB...`
-   - `⏳ Throttling for 15s...` (Rate Limit Protection)
    - `✅ Successfully ingested...`
 
 4. **Chat:** Once ingestion finishes, use the main chat window to ask questions like *"What are the key concepts of Generative AI?"*.
@@ -202,7 +215,3 @@ The graph is strictly typed to ensure high-quality retrieval:
 - **Relationships:** `RELATES_TO`, `INVENTED_BY`, `USED_BY`, `PART_OF`, `WORKED_AT`.
 
 ---
-
-## 🔧 Troubleshooting
-
-*(Add your troubleshooting section here)*
